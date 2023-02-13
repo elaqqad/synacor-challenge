@@ -1,2 +1,3 @@
 # synacor-challenge
-An complete solution to the synacor challenge
+
+My attempt at solving the synacor challenge
