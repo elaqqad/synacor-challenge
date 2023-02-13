@@ -1,0 +1,8 @@
+1766 : self.dumper.write_text_to_file(self.memory.memory, "decrypted")
+1766 : self.dumper.write_code_to_file(0, 32767, "decrypted")
+1766 : self.dumper.write_code_to_file(6027, 6068, "function")
+5445 : self.do_set(32768 + 7, 25734) # set register 7 to the magical value
+5445 : self.do_set(5489, 21)  # noop (do not call the expensive function)
+5445 : self.do_set(5490, 21) # noop (do not call the expensive function)
+5489 : self.do_set(32768, 6) # set register ra to 6 to avoid calling 5579
+1988 : self.dumper.write_code_to_file(0, 32767, str(self.memory.memory[6126]) + "_" + str(self.memory.memory[6127]) + "_" + str(self.memory.memory[6128]))
