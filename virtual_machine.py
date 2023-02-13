@@ -3,8 +3,9 @@ import sys
 import itertools
 from array import array
 from collections import defaultdict
-
 from dumper import Dumper
+MAX_ADDRESS = 32768
+
 
 class RuntimeException(Exception):
     """ This exception is raised when we encounter a runtime error
@@ -19,19 +20,18 @@ class VirtualMachineMemory:
         self.memory = array('H', itertools.repeat(0, 0x10000))
 
     def __getitem__(self, address):
-        if 0 <= address <= 32767:
+        if 0 <= address < MAX_ADDRESS:
             return self.memory[address]
-        elif 32768 <= address <= 32775:
-            return self.registers[address - 32768]
+        elif MAX_ADDRESS <= address < MAX_ADDRESS + 8:
+            return self.registers[address - MAX_ADDRESS]
         else:
             raise RuntimeException(f"Address {address} is invalid")
 
     def __setitem__(self, address, value):
-
-        if 0 <= address <= 32767:
-            self.memory[address] = value % 32768
-        elif 32768 <= address <= 32775:
-            self.registers[address - 32768] = value % 32768
+        if 0 <= address < MAX_ADDRESS:
+            self.memory[address] = value % MAX_ADDRESS
+        elif MAX_ADDRESS <= address < MAX_ADDRESS + 8:
+            self.registers[address - MAX_ADDRESS] = value % MAX_ADDRESS
         else:
             raise RuntimeException(f"Address {address} is neither memory nor register")
 
@@ -47,10 +47,10 @@ class VirtualMachineMemory:
         Returns:
             int : the value at given register or address.
         """
-        if 0 <= address <= 32767:
+        if 0 <= address < MAX_ADDRESS:
             return address
-        elif 32768 <= address <= 32775:
-            return self.registers[address - 32768]
+        elif MAX_ADDRESS <= address < MAX_ADDRESS + 8:
+            return self.registers[address - MAX_ADDRESS]
         else:
             raise RuntimeException(f"Value {address} is invalid as a number or a register")
 
@@ -67,10 +67,10 @@ class VirtualMachineMemory:
             string : value of the address (int or r*)
         """
         codes = ['ra', 'rb', 'rc', 'rd', 're', 'rf', 'rg', 'rh']
-        if 0 <= address <= 32767:
+        if 0 <= address < MAX_ADDRESS :
             return str(address)
-        if 32768 <= address <= 32775:
-            return codes[address - 32768].lower()
+        if MAX_ADDRESS <= address < MAX_ADDRESS + 8:
+            return codes[address - MAX_ADDRESS].lower()
         raise RuntimeException(f"Value {address} is invalid as a number or a register")
 
     def read(self, start, length):
