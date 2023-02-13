@@ -17,19 +17,9 @@ class VirtualMachineMemory:
     def __init__(self):
         self.registers = array('H', [0, 0, 0, 0, 0, 0, 0, 0])
         self.memory = array('H', itertools.repeat(0, 0x10000))
-        self.visited = array('h')
-        self.interval = [28396, 28402]
-        self.monitor = False
 
     def __getitem__(self, address):
-        if(address == self.interval[0]):
-            self.monitor = True
-        if(address == self.interval[1]) :
-            self.monitor = False
-            print(self.visited)
         if 0 <= address <= 32767:
-            if self.monitor :
-                self.visited.append(address)
             return self.memory[address]
         elif 32768 <= address <= 32775:
             return self.registers[address - 32768]
@@ -164,9 +154,7 @@ class VirtualMachine:
         program = array('H')
         with open(filename, 'rb') as file:
             program.frombytes(file.read())
-        size = len(program)
-        self.memory.memory[0:size] = program
-        return size
+        self.memory.memory[0:len(program)] = program
 
     def run(self):
         """ Runs the virtual machine
@@ -409,12 +397,6 @@ class RealPlayer:
 
     def save_hack(self) :
         """ Adds a hack to the virtual machine
-
-        Args:
-            virtual_machine (VirtualMachine): the virtual machine
-
-        Returns: 
-            string : the character to pass to the program
         """
         [cursor, code] = sys.stdin.readline().strip().split(":",1)
         self.virtual_machine.hack(int(cursor), code)
@@ -446,9 +428,6 @@ class FilePlayer :
         sys.stdout.write(char)
     def read(self):
         """ Returns one character of current instruction
-
-        Args:
-            virtual_machine (VirtualMachine): the virtual machine
         """
         char = self.read_char()
         while char == "!":
@@ -469,5 +448,5 @@ if __name__ == '__main__':
     player = FilePlayer()
     vm = VirtualMachine(player)
     player.hack(vm)
-    code_size = vm.load("Program/challenge.bin")
+    vm.load("Program/challenge.bin")
     vm.run()
